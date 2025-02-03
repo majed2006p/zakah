@@ -239,13 +239,13 @@
   <br>
 
   <video id="zakahVideo" autoplay controls style="width: 100%; border-radius: 10px;">
-    <source src="../zakah/1.mp4" type="video/mp4">
+    <source src="/zakah/1.mp4" type="video/mp4">
     <p>متصفحك لا يدعم تشغيل الفيديو.</p>
   </video>
 
 
   <div class="section" onclick="downloadPDF()">
-    <img src="../icone-web/171322.png" alt="تاب الزكاة" style="width: 60px; height: 60px;" />
+    <img src="/icone-web/171322.png" alt="تاب الزكاة" style="width: 60px; height: 60px;" />
     <div class="section-title">كتاب الزكاة</div>
   </div>
 
@@ -290,7 +290,7 @@
 
   <div class="section" onclick="showCard('fitrZakat')">
     <div class="section-icon">
-      <img src="../icone-web/10161463.png" alt="زكاة الفطر" style="width: 60px; height: 60px;" />
+      <img src="/icone-web/10161463.png" alt="زكاة الفطر" style="width: 60px; height: 60px;" />
     </div>
     <div class="section-title">زكاة الفطر</div>
   </div>
@@ -306,7 +306,7 @@
 
 
 <div class="section" onclick="downloadZakat_Calculator()">
-  <img src="../icone-web/11376587.png" alt="برنامج الزكاة لنظام الويندوز" style="width: 60px; height: 60px;" />
+  <img src="/icone-web/11376587.png" alt="برنامج الزكاة لنظام الويندوز" style="width: 60px; height: 60px;" />
   <div class="section-title">حمل  برنامج الزكاة للويندوز </div>
 
 </div>
@@ -314,7 +314,7 @@
 <script>
   function downloadZakat_Calculator() {
     const link = document.createElement('a');
-    link.href = '../zakah/Zakat_Calculator.exe';
+    link.href = '/zakah/Zakat_Calculator.exe';
     link.download = 'Zakat_Calculator.exe'; // اسم الملف عند تحميله
     link.click();
   }
