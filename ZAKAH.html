@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>برنامج حساب الزكاة</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Tajawal', sans-serif;
+      background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding-top: 100px; /* مساحة كافية تحت العنوان حتى لا تخفي البطاقات */
+
+    }
+
+    .header {
+      background: linear-gradient(to right, rgba(90, 24, 154, 0.7), rgba(157, 78, 221, 0.7)); /* تدرج لوني شفاف */
+      backdrop-filter: blur(5px); /* تأثير الزجاج المعتم */
+      -webkit-backdrop-filter: blur(5px); /* دعم لمتصفحات WebKit */
+      color: white;
+      text-align: center;
+      padding: 20px;
+      font-size: 16px;
+      font-weight: bold;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+      border-radius: 0;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-family: "Tajawal", sans-serif;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+
+
+
+    .sections {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      padding: 20px;
+      width: 90%;
+      max-width: 1200px;
+    }
+
+    .section {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+    }
+
+
+
+
+
+
+    .section:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .section-icon {
+      font-size: 3rem;
+      color: #5a189a;
+      margin-bottom: 10px;
+    }
+
+    .section-title {
+      font-size: 1.2rem;
+      font-weight: bold;
+
+    }
+
+    .card {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 85vw;
+      max-height: 80vh; /* تعيين ارتفاع أقصى */
+      overflow-y: auto; /* تمكين التمرير عند الحاجة */
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      padding: 20px;
+      z-index: 1000;
+      text-align: center;
+      direction: rtl;
+    }
+
+
+
+    .card.active {
+      display: block;
+    }
+
+    .card-header {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+      color: #5a189a;
+    }
+
+    .card-content {
+      margin-bottom: 20px;
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+
+    .card button {
+      background: #5a189a;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .card button:hover {
+      background: #3c096c;
+    }
+
+
+    .card .form-group, .card input, .card select {
+      width: 80%; /* تحديد العرض ليكون 80% */
+      margin: 10px auto; /* لضمان تنسيق العناصر داخل الكرت */
+    }
+
+
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+    }
+
+    .overlay.active {
+      display: block;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+      text-align: left;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      direction: rtl; /* لجعل النص من اليمين لليسار */
+      text-align: right; /* لضبط النص في الجهة اليمنى */
+    }
+
+
+
+
+    select, input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+
+
+    /* التعديلات الخاصة بالزر */
+    .support-container {
+      position: absolute;
+      top: 100px; /* تحديد المسافة عن الأعلى */
+      left: 50%;  /* تحديد المنتصف بالنسبة للأفق */
+      transform: translateX(-50%); /* الترجمة إلى المنتصف التام */
+      z-index: 999;
+    }
+
+    .support-btn {
+      padding: 12px 25px;
+      background-color: rgba(92, 107, 193, 0.8); /* لون أزرق هادئ */
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
+      transition: all 0.3s ease;
+    }
+
+    .support-btn:hover {
+      background-color: rgba(57, 73, 171, 0.1); /* تغيير اللون عند المرور عليه */
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .support-btn:focus {
+      outline: none;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>برنامج حساب الزكاة</h1>
+</div>
+
+<!-- بطاقة توضيحيه عبر فيديو -->
+
+
+
+<div class="sections">
+
+  <!-- زر التواصل مع الدعم أسفل الهيدر -->
+  <div class="support-container">
+    <a href="mailto:appzakah@gmail.com">
+      <button class="support-btn"> للاقتراحات والشكاوى </button>
+    </a>
+  </div>
+  <br>
+  <br>
+
+  <video id="zakahVideo" autoplay controls style="width: 100%; border-radius: 10px;">
+    <source src="../zakah/1.mp4" type="video/mp4">
+    <p>متصفحك لا يدعم تشغيل الفيديو.</p>
+  </video>
+
+
+  <div class="section" onclick="downloadPDF()">
+    <img src="../icone-web/171322.png" alt="تاب الزكاة" style="width: 60px; height: 60px;" />
+    <div class="section-title">كتاب الزكاة</div>
+  </div>
+
+  <script>
+    function downloadPDF() {
+      const link = document.createElement('a');
+      link.href = '../zakah/zakah.pdf';
+      link.download = 'كتاب_الزكاة.pdf'; // اسم الملف عند تحميله
+      link.click();
+    }
+  </script>
+
+
+
+
+
+  <!-- إضافة قسم حساب الحول في البداية -->
+  <div class="section" onclick="showCard('houlCalculation')">
+    <div class="section-icon">&#x1F4C5;</div>
+    <div class="section-title">حساب الحول</div>
+  </div>
+
+
+
+
+  <div class="section" onclick="showCard('goldSilver')">
+    <div class="section-icon">&#x1F48E;</div>
+    <div class="section-title">زكاة الذهب والفضة</div>
+  </div>
+  <div class="section" onclick="showCard('money')">
+    <div class="section-icon">&#x1F4B8;</div>
+    <div class="section-title">زكاة المال</div>
+  </div>
+  <div class="section" onclick="showCard('livestock')">
+    <div class="section-icon">&#x1F411;</div>
+    <div class="section-title">زكاة الأنعام</div>
+  </div>
+  <div class="section" onclick="showCard('crops')">
+    <div class="section-icon">&#x1F33E;</div>
+    <div class="section-title">زكاة الحبوب</div>
+  </div>
+
+  <div class="section" onclick="showCard('fitrZakat')">
+    <div class="section-icon">
+      <img src="../icone-web/10161463.png" alt="زكاة الفطر" style="width: 60px; height: 60px;" />
+    </div>
+    <div class="section-title">زكاة الفطر</div>
+  </div>
+
+  <div class="section" onclick="showCard('rikazMines')">
+    <div class="section-icon">&#x1F4A0;</div>
+    <div class="section-title">زكاة الركاز والمعادن</div>
+  </div>
+
+
+
+
+
+
+<div class="section" onclick="downloadZakat_Calculator()">
+  <img src="../icone-web/11376587.png" alt="برنامج الزكاة لنظام الويندوز" style="width: 60px; height: 60px;" />
+  <div class="section-title">حمل  برنامج الزكاة للويندوز </div>
+
+</div>
+</div>
+<script>
+  function downloadZakat_Calculator() {
+    const link = document.createElement('a');
+    link.href = '../zakah/Zakat_Calculator.exe';
+    link.download = 'Zakat_Calculator.exe'; // اسم الملف عند تحميله
+    link.click();
+  }
+</script>
+
+
+<div class="overlay" id="overlay" onclick="hideCard()"></div>
+
+
+
+<!-- بطاقة حساب الحول -->
+<div class="card" id="houlCalculation">
+  <div class="card-header">حساب الحول</div>
+  <div class="card-content">
+    <p> ملاحظة: الأصل في الحساب أن يكون بالتقويم الهجري (الحساب القمري)، وهذه الحسبة تقريبية للأشهر العربية، حيث يتم إنقاص الأيام المختارة عن 354 يومًا للسنة الهجرية. </p>
+    <div class="form-group">
+      <label for="startDate">التاريخ  :</label>
+      <input type="date" id="startDate" placeholder="اختر تاريخ البداية">
+    </div>
+    <button onclick="calculateHoul()">حساب الزكاة</button>
+    <div id="houlResult" style="margin-top: 15px; font-weight: bold; color: #5a189a;"></div>
+    <div id="houlStatus" style="margin-top: 10px; font-weight: bold;"></div> <!-- لعرض حالة الحول -->
+  </div>
+  <button onclick="hideCard()">إغلاق</button>
+</div>
+
+<div class="card" id="goldSilver">
+  <div class="card-header">زكاة الذهب والفضة</div>
+  <div class="card-content">
+    <div class="form-group">
+      <label for="metalType">اختر نوع المعدن:</label>
+      <select id="metalType">
+        <option value="gold24">ذهب عيار 24</option>
+        <option value="gold22">ذهب عيار 22</option>
+        <option value="gold21">ذهب عيار 21</option>
+        <option value="gold18">ذهب عيار 18</option>
+        <option value="silver">فضة</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="weight">وزن المعدن (بالغرام):</label>
+      <input type="number" id="weight" placeholder="أدخل الوزن هنا">
+    </div>
+    <div class="form-group">
+      <label for="goldPrice">سعر الذهب اليوم (للجرام):</label>
+      <input type="number" id="goldPrice" placeholder="أدخل سعر الذهب هنا">
+    </div>
+    <button onclick="calculateZakat()">حساب الزكاة</button>
+    <button onclick="convertZakatToMoney()">تحويل الزكاة إلى مال</button>
+    <div id="result" style="margin-top: 15px; font-weight: bold; color: #5a189a;"></div>
+  </div>
+  <button onclick="hideCard()">إغلاق</button>
+</div>
+
+
+
+
+
+
+
+
+<div class="card" id="money">
+  <div class="card-header">زكاة المال</div>
+  <div class="card-content">
+    <div class="form-group">
+      <label for="calculationMethod">اختر طريقة الحساب:</label>
+      <select id="calculationMethod" onchange="toggleFields()">
+        <option value="normal">بدون نصاب الذهب</option>
+        <option value="gold">بنصاب الذهب (عيار 24)</option>
+        <option value="trade">زكاة عروض التجارة</option>
+      </select>
+    </div>
+
+    <!-- حقول خاصة بنصاب الذهب -->
+    <div class="form-group" id="goldInputSection" style="display: none;">
+      <label for="goldPrice">أدخل سعر الذهب (للجرام):</label>
+      <input type="number" id="goldPriceInput" placeholder="أدخل سعر الذهب">
+    </div>
+
+    <!-- حقول خاصة بزكاة عروض التجارة -->
+    <div id="tradeInputs" style="display: none;">
+      <div class="form-group">
+        <label for="tradeGoodsAmount">مبلغ البضاعة:</label>
+        <input type="number" id="tradeGoodsAmount" placeholder="أدخل قيمة البضاعة">
+      </div>
+      <div class="form-group">
+        <label for="tradeDebtsAmount">الديون (التي للمحل):</label>
+        <input type="number" id="tradeDebtsAmount" placeholder="أدخل قيمة الديون">
+      </div>
+      <div class="form-group">
+        <label for="tradeLiabilities">الديون المستحقة على المحل (التي يجب ان تسدد خلال فترة الزكاة):</label>
+        <input type="number" id="tradeLiabilities" placeholder="أدخل قيمة الديون المستحقة">
+      </div>
+      <div class="form-group">
+        <label for="tradeAvailableAmount">المبلغ المتوفر (المال الموجود):</label>
+        <input type="number" id="tradeAvailableAmount" placeholder="أدخل المبلغ المتوفر">
+      </div>
+      <div class="form-group">
+        <label for="tradeGoldPrice">سعر الذهب اليوم (للجرام):</label>
+        <input type="number" id="tradeGoldPriceInput" placeholder="أدخل سعر الذهب">
+      </div>
+    </div>
+
+    <!-- حقل إدخال المبلغ -->
+    <div class="form-group" id="moneyInputSection">
+      <label for="moneyAmountInput">أدخل المبلغ:</label>
+      <input type="number" id="moneyAmountInput" placeholder="أدخل المبلغ هنا">
+    </div>
+
+    <button onclick="calculateMoneyZakat()">حساب الزكاة</button>
+    <div id="moneyResult" style="margin-top: 15px; font-weight: bold; color: #5a189a;"></div>
+  </div>
+  <button onclick="hideCard()">إغلاق</button>
+</div>
+
+
+
+<div class="card" id="livestock">
+  <div class="card-header">زكاة الأنعام</div>
+  <div class="card-content">
+    <div class="form-group">
+      <label for="livestockType">اختر نوع الأنعام:</label>
+      <select id="livestockType" onchange="updateLivestockForm()">
+        <option value="sheep">الغنم</option>
+        <option value="cows">البقر</option>
+        <option value="camels">الإبل</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="livestockCount">ادخل العدد</label>
+      <input type="number" id="livestockCount" placeholder="أدخل عدد الأنعام">
+    </div>
+    <button onclick="calculateLivestockZakat()">حساب الزكاة</button>
+    <div id="livestockResult" style="margin-top: 15px; font-weight: bold; color: #5a189a;"></div>
+  </div>
+  <button onclick="hideCard()">إغلاق</button>
+</div>
+
+
+
+
+
+
+<div class="card" id="crops">
+  <div class="card-header">  زكاة الحبوب</div>
+  <div class="card-content">
+    <div class="form-group">
+      <label for="irrigationType">اختر طريقة الري:</label>
+      <select id="irrigationType">
+        <option value="rain">مطر/سيول (10%)</option>
+        <option value="cost">بتكلفة (5%)</option>
+        <option value="mixed">مخلط (7.5%)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="cropWeight">وزن الحبوب (بالكيلوجرام):</label>
+      <input type="number" id="cropWeight" placeholder="أدخل وزن الحبوب">
+    </div>
+    <button onclick="calculateCropsZakat()">حساب الزكاة</button>
+    <div id="cropsResult" style="margin-top: 15px; font-weight: bold; color: #5a189a;"></div>
+  </div>
+  <button onclick="hideCard()">إغلاق</button>
+</div>
+
+
+
+
+<div class="card" id="fitrZakat">
+  <div class="card-header">زكاة الفطر</div>
+  <div class="card-content">
+    <div class="form-group">
+      <label for="familyMembers">عدد أفراد الأسرة:</label>
+      <input type="number" id="familyMembers" placeholder="أدخل عدد أفراد الأسرة">
+    </div>
+    <button onclick="calculateFitrZakat()">حساب الزكاة</button>
+    <div id="fitrResult" style="margin-top: 15px; font-weight: bold; color: #5a189a;"></div>
+  </div>
+  <button onclick="hideCard()">إغلاق</button>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="card" id="rikazMines">
+  <div class="card-header">زكاة الركاز والمعادن</div>
+  <div class="card-content">
+    <div class="form-group">
+      <label for="rikazMinesType">اختر النوع:</label>
+      <select id="rikazMinesType" onchange="toggleRikazMinesFields()">
+        <option value="">-- اختر --</option>
+        <option value="rikaz">زكاة الركاز (الكنوز)</option>
+        <option value="mines">زكاة المعادن (النفط والمناجم)</option>
+      </select>
+    </div>
+
+    <!-- حقول خاصة بالركاز (الكنوز) -->
+    <div id="rikazFields" style="display: none;">
+      <div class="form-group">
+        <label for="rikazWeight">وزن الكنز (بالغرام):</label>
+        <input type="number" id="rikazWeight" placeholder="أدخل وزن الكنز">
+      </div>
+      <div class="form-group">
+        <label for="rikazPrice">قيمة الجرام :</label>
+        <input type="number" id="rikazPrice" placeholder="أدخل قيمة الجرام">
+      </div>
+      <button onclick="calculateRikazZakat()">حساب الزكاة (استخراج 20%)</button>
+      <br>
+      <button onclick="convertRikazToMoney()" style="margin-top: 10px;">تحويل الزكاة إلى مال</button>
+    </div>
+
+    <!-- حقول خاصة بالمعادن (النفط والمناجم) -->
+    <div id="minesFields" style="display: none;">
+      <div class="form-group">
+        <label for="minesAmount">المبلغ :</label>
+        <input type="number" id="minesAmount" placeholder="أدخل المبلغ">
+      </div>
+      <div class="form-group">
+        <label for="minesPrice">قيمة الجرام :</label>
+        <input type="number" id="minesPrice" placeholder="أدخل قيمة الجرام">
+      </div>
+      <button onclick="calculateMinesZakat()">حساب الزكاة</button>
+    </div>
+
+    <div id="rikazMinesResult" style="margin-top: 15px; font-weight: bold; color: #5a189a;"></div>
+  </div>
+  <button onclick="hideCard()">إغلاق</button>
+</div>
+
+
+
+
+<script>
+
+
+  // دالة للتحقق من تاريخ آخر تشغيل للفيديو
+  function checkVideoPlayback() {
+    const video = document.getElementById('zakahVideo');
+    const today = new Date().toLocaleDateString(); // الحصول على تاريخ اليوم
+
+    // التحقق من وجود تاريخ التشغيل في LocalStorage
+    const lastPlayedDate = localStorage.getItem('lastVideoPlayedDate');
+
+    if (lastPlayedDate !== today) {
+      // إذا كان اليوم مختلفًا عن تاريخ التشغيل الأخير
+      video.muted = false; // تشغيل الصوت
+      video.play(); // تشغيل الفيديو
+      localStorage.setItem('lastVideoPlayedDate', today); // حفظ تاريخ التشغيل
+    } else {
+      // إذا كان الفيديو قد تم تشغيله اليوم
+      video.muted = true; // إيقاف الصوت
+      video.play(); // تشغيل الفيديو بدون صوت
+    }
+  }
+
+  // استدعاء الدالة عند تحميل الصفحة
+  window.onload = checkVideoPlayback;
+
+
+
+
+
+
+
+
+  // دالة لإغلاق البطاقة
+  function hideCard() {
+    document.getElementById('videoExplanation').style.display = "none";
+  }
+
+
+
+
+
+
+
+  // حساب الزكاة بناءً على الحول (عدد الأيام من تاريخ البداية حتى اليوم الحالي)
+  function calculateHoul() {
+    const startDate = new Date(document.getElementById('startDate').value);
+
+    // التأكد من المدخلات
+    if (isNaN(startDate.getTime())) {
+      document.getElementById('houlResult').textContent = "يرجى إدخال تاريخ صحيح.";
+      return;
+    }
+
+    // تحديد تاريخ اليوم
+    const today = new Date();
+
+    // حساب الفرق بين التاريخين (اليوم وتاريخ البداية) بالأيام
+    const timeDifference = today.getTime() - startDate.getTime();
+    const dayDifference = Math.floor(timeDifference / (1000 * 3600 * 24)); // حساب الأيام
+
+    // عرض عدد الأيام في الحول
+    document.getElementById('houlResult').textContent = `مر: ${dayDifference} يوم.`;
+
+    // تحقق من إذا كان قد مر 354 يومًا (حول)
+    if (dayDifference >= 354) {
+      document.getElementById('houlStatus').textContent = "حال عليه الحول. الزكاة واجبة.";
+      document.getElementById('houlStatus').style.color = "green";
+    } else {
+      document.getElementById('houlStatus').textContent = "لم يحل عليه الحول بعد.";
+      document.getElementById('houlStatus').style.color = "red";
+    }
+  }
+
+  // إضافة أي وظائف أخرى لتفعيل التقويم أو غيرها إذا لزم الأمر
+
+
+
+
+  let zakatAmountInGrams = 0;
+
+  function showCard(cardId) {
+    document.getElementById('overlay').classList.add('active');
+    document.getElementById(cardId).classList.add('active');
+  }
+
+  function hideCard() {
+    document.getElementById('overlay').classList.remove('active');
+    document.querySelectorAll('.card').forEach(card => card.classList.remove('active'));
+  }
+
+  function calculateZakat() {
+    const metalType = document.getElementById('metalType').value;
+    const weight = parseFloat(document.getElementById('weight').value);
+    const goldPrice = parseFloat(document.getElementById('goldPrice').value);
+    const nisabValues = {
+      gold24: 85,
+      gold22: 92,
+      gold21: 97,
+      gold18: 113,
+      silver: 595
+    };
+    const nisab = nisabValues[metalType];
+
+    if (isNaN(weight) || weight <= 0) {
+      document.getElementById('result').textContent = "يرجى إدخال وزن صحيح.";
+      return;
+    }
+
+    if (weight >= nisab) {
+      zakatAmountInGrams = (weight * 2.5) / 100;
+      document.getElementById('result').textContent = `الزكاة الواجبة: ${zakatAmountInGrams.toFixed(2)} غرام.`;
+    } else {
+      document.getElementById('result').textContent = "لا زكاة واجبة لأن الوزن أقل من النصاب.";
+    }
+  }
+
+  function convertZakatToMoney() {
+    const goldPrice = parseFloat(document.getElementById('goldPrice').value);
+    if (isNaN(goldPrice) || goldPrice <= 0) {
+      document.getElementById('result').textContent = "يرجى إدخال سعر الذهب بشكل صحيح.";
+      return;
+    }
+
+    if (zakatAmountInGrams > 0) {
+      const zakatInMoney = zakatAmountInGrams * goldPrice;
+      document.getElementById('result').textContent = `الزكاة بالمال: ${zakatInMoney.toFixed(2)} ريال.`;
+    } else {
+      document.getElementById('result').textContent = "يرجى حساب الزكاة أولاً.";
+    }
+  }
+
+
+
+
+  function toggleFields() {
+    const calculationMethod = document.getElementById('calculationMethod').value;
+    document.getElementById('goldInputSection').style.display = calculationMethod === 'gold' ? 'block' : 'none';
+    document.getElementById('tradeInputs').style.display = calculationMethod === 'trade' ? 'block' : 'none';
+    document.getElementById('moneyInputSection').style.display = calculationMethod === 'trade' ? 'none' : 'block';
+  }
+
+  function calculateMoneyZakat() {
+    const calculationMethod = document.getElementById('calculationMethod').value;
+    const moneyResult = document.getElementById('moneyResult');
+
+    if (calculationMethod === 'normal') {
+      const moneyAmount = parseFloat(document.getElementById('moneyAmountInput').value);
+      if (isNaN(moneyAmount) || moneyAmount <= 0) {
+        moneyResult.textContent = "يرجى إدخال مبلغ صحيح.";
+        return;
+      }
+      const zakat = moneyAmount / 40;
+      moneyResult.textContent = `الزكاة الواجبة: ${zakat.toFixed(2)} ريال`;
+    } else if (calculationMethod === 'gold') {
+      const moneyAmount = parseFloat(document.getElementById('moneyAmountInput').value);
+      const goldPrice = parseFloat(document.getElementById('goldPriceInput').value);
+
+      if (isNaN(moneyAmount) || moneyAmount <= 0 || isNaN(goldPrice) || goldPrice <= 0) {
+        moneyResult.textContent = "يرجى إدخال مبلغ وسعر الذهب بشكل صحيح.";
+        return;
+      }
+
+      const goldThreshold = goldPrice * 85;
+      if (moneyAmount >= goldThreshold) {
+        const zakat = moneyAmount / 40;
+        moneyResult.textContent = `الزكاة الواجبة: ${zakat.toFixed(2)} ريال`;
+      } else {
+        moneyResult.textContent = "لم يصل المبلغ إلى نصاب الذهب.";
+      }
+    } else if (calculationMethod === 'trade') {
+      const tradeGoodsAmount = parseFloat(document.getElementById('tradeGoodsAmount').value) || 0;
+      const tradeDebtsAmount = parseFloat(document.getElementById('tradeDebtsAmount').value) || 0;
+      const tradeLiabilities = parseFloat(document.getElementById('tradeLiabilities').value) || 0;
+      const tradeAvailableAmount = parseFloat(document.getElementById('tradeAvailableAmount').value) || 0;
+      const tradeGoldPrice = parseFloat(document.getElementById('tradeGoldPriceInput').value);
+
+      if (isNaN(tradeGoldPrice) || tradeGoldPrice <= 0) {
+        moneyResult.textContent = "يرجى إدخال سعر الذهب بشكل صحيح.";
+        return;
+      }
+
+      const totalAmount = tradeGoodsAmount + tradeDebtsAmount + tradeAvailableAmount - tradeLiabilities;
+      const goldThreshold = tradeGoldPrice * 85;
+
+      if (totalAmount >= goldThreshold) {
+        const zakat = totalAmount / 40;
+        moneyResult.textContent = `الزكاة الواجبة: ${zakat.toFixed(2)} ريال`;
+      } else {
+        moneyResult.textContent = "لم يصل المبلغ إلى نصاب الذهب.";
+      }
+    }
+  }
+
+
+
+
+
+
+
+
+
+  function calculateLivestockZakat() {
+    const livestockType = document.getElementById('livestockType').value;
+    let count = parseInt(document.getElementById('livestockCount').value);
+
+    if (isNaN(count) || count <= 0) {
+      document.getElementById('livestockResult').textContent = "يرجى إدخال عدد صحيح.";
+      return;
+    }
+
+    let result = '';
+
+    // تعديل الرقم إذا كان أكبر من 120
+    if (count > 129) {
+      count = parseInt(count.toString().replace(/[1-9]$/, '0'));  // استبدال الرقم الأخير
+    }
+
+    if (livestockType === 'sheep') {
+      if (count < 40) result = "لا زكاة واجبة.";
+      else if (count <= 120) result = "الزكاة الواجبة: شاه واحدة.";
+      else if (count <= 200) result = "الزكاة الواجبة: شاتان.";
+      else if (count <= 399) result = "الزكاة الواجبة: ثلاث شياه.";
+      else result = `الزكاة الواجبة: ${Math.floor((count - 300) / 100) + 3} شياه.`;
+    }
+
+    else if (livestockType === 'cows') {
+      if (count < 30) {
+        result = "لا زكاة واجبة.";
+      } else {
+        let thabeeCount = 0;
+        let musinnaCount = 0;
+        let remaining = count;
+
+        const canDivide = (num, divisor) => num % divisor === 0;
+
+        let foundDivision = false;
+        while (remaining >= 30 && !foundDivision) {
+          for (let i = 0; i <= remaining; i += 30) {
+            if (canDivide(i, 30) && canDivide(remaining - i, 40)) {
+              thabeeCount = i / 30;
+              musinnaCount = (remaining - i) / 40;
+              foundDivision = true;
+              break;
+            }
+          }
+          if (!foundDivision) {
+            remaining--;
+          }
+        }
+
+        if (foundDivision) {
+          result = `الزكاة الواجبة: ${thabeeCount > 0 ? thabeeCount + " تبيع أو تبيعة" : ""}${thabeeCount > 0 && musinnaCount > 0 ? " و " : ""}${musinnaCount > 0 ? musinnaCount + " مسنة" : ""}.`;
+        } else {
+          result = "لا يمكن تقسيم العدد إلى جزأين يقبلان القسمة على 30 و40.";
+        }
+      }
+    }
+
+    else if (livestockType === 'camels') {
+      if (count <= 4) result = "لا زكاة واجبة.";
+      else if (count <= 9) result = "الزكاة الواجبة: شاه واحدة.";
+      else if (count <= 14) result = "الزكاة الواجبة: شاتان.";
+      else if (count <= 19) result = "الزكاة الواجبة: ثلاث شياه.";
+      else if (count <= 24) result = "الزكاة الواجبة: أربع شياه.";
+      else if (count <= 35) result = "الزكاة الواجبة: بنت مخاض.";
+      else if (count <= 45) result = "الزكاة الواجبة: بنت لبون.";
+      else if (count <= 60) result = "الزكاة الواجبة: حقة.";
+      else if (count <= 75) result = "الزكاة الواجبة: جذعة.";
+      else if (count <= 90) result = "الزكاة الواجبة: بنتا لبون.";
+      else if (count <= 120) result = "الزكاة الواجبة: حقتان.";
+      else if (count <= 129) result = "الزكاة الواجبة: ثلاث بنات لبون.";
+      else {
+        if (count % 50 === 0) {
+          result = `الزكاة الواجبة: ${count / 50} حقة.`;
+        } else if (count % 40 === 0) {
+          result = `الزكاة الواجبة: ${count / 40} بنت لبون.`;
+        } else {
+          let found = false;
+          for (let i = count; i > 0; i--) {
+            if (i % 50 === 0 && (count - i) % 40 === 0) {
+              result = `الزكاة الواجبة: ${i / 50} حقة و ${(count - i) / 40} بنت لبون.`;
+              found = true;
+              break;
+            } else if (i % 40 === 0 && (count - i) % 50 === 0) {
+              result = `الزكاة الواجبة: ${i / 40} بنت لبون و ${(count - i) / 50} حقة.`;
+              found = true;
+              break;
+            }
+          }
+          if (!found) {
+            result = "لم يتم العثور على تقسيم دقيق، يرجى مراجعة العدد المدخل.";
+          }
+        }
+      }
+    }
+
+
+    document.getElementById('livestockResult').textContent = result;
+  }
+
+
+
+
+
+  function calculateCropsZakat() {
+    const irrigationType = document.getElementById('irrigationType').value;
+    const cropWeight = parseFloat(document.getElementById('cropWeight').value);
+
+    if (isNaN(cropWeight) || cropWeight <= 0) {
+      document.getElementById('cropsResult').textContent = "يرجى إدخال وزن صحيح.";
+      return;
+    }
+
+    if (cropWeight < 653) {
+      document.getElementById('cropsResult').textContent = "لا زكاة واجبة لأن الوزن أقل من النصاب.";
+      return;
+    }
+
+    let zakatRate = 0;
+
+    if (irrigationType === "rain") zakatRate = 0.1;
+    else if (irrigationType === "cost") zakatRate = 0.05;
+    else if (irrigationType === "mixed") zakatRate = 0.075;
+
+    const zakat = cropWeight * zakatRate;
+    document.getElementById('cropsResult').textContent = `الزكاة الواجبة: ${zakat.toFixed(2)} كيلوجرام.`;
+  }
+
+
+
+
+  function calculateFitrZakat() {
+    const familyMembers = parseInt(document.getElementById('familyMembers').value);
+
+    if (isNaN(familyMembers) || familyMembers <= 0) {
+      document.getElementById('fitrResult').textContent = "يرجى إدخال عدد صحيح.";
+      return;
+    }
+
+    const zakatWeight = familyMembers * 2.5;
+    document.getElementById('fitrResult').textContent = `زكاة الفطر: ${zakatWeight.toFixed(2)} كيلوغرام.`;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // تبديل الحقول بناءً على الاختيار
+  function toggleRikazMinesFields() {
+    const type = document.getElementById('rikazMinesType').value;
+    document.getElementById('rikazFields').style.display = type === 'rikaz' ? 'block' : 'none';
+    document.getElementById('minesFields').style.display = type === 'mines' ? 'block' : 'none';
+    document.getElementById('rikazMinesResult').textContent = ""; // مسح النتيجة عند تغيير الخيار
+  }
+
+  // حساب زكاة الركاز (الكنوز)
+  let zakatRikazWeight = 0; // متغير لتخزين وزن الزكاة
+
+  function calculateRikazZakat() {
+    const weight = parseFloat(document.getElementById('rikazWeight').value);
+    const price = parseFloat(document.getElementById('rikazPrice').value);
+
+    if (isNaN(weight) || weight <= 0 || isNaN(price) || price <= 0) {
+      document.getElementById('rikazMinesResult').textContent = "يرجى إدخال قيم صحيحة.";
+      return;
+    }
+
+    zakatRikazWeight = weight * 0.2; // 20% من الوزن
+    document.getElementById('rikazMinesResult').textContent = `الزكاة الواجبة: ${zakatRikazWeight.toFixed(2)} غرام.`;
+  }
+
+  function convertRikazToMoney() {
+    const price = parseFloat(document.getElementById('rikazPrice').value);
+
+    if (isNaN(price) || price <= 0) {
+      document.getElementById('rikazMinesResult').textContent = "يرجى إدخال قيمة الجرام بشكل صحيح.";
+      return;
+    }
+
+    if (zakatRikazWeight <= 0) {
+      document.getElementById('rikazMinesResult').textContent = "يرجى حساب الزكاة أولاً.";
+      return;
+    }
+
+    const zakatAmount = zakatRikazWeight * price; // تحويل الوزن إلى مال
+    document.getElementById('rikazMinesResult').textContent = `الزكاة بالمال: ${zakatAmount.toFixed(2)} ريال.`;
+  }
+
+
+
+
+  // حساب زكاة المعادن (النفط والمناجم)
+  function calculateMinesZakat() {
+    const amount = parseFloat(document.getElementById('minesAmount').value);
+    const price = parseFloat(document.getElementById('minesPrice').value);
+
+    if (isNaN(amount) || amount <= 0 || isNaN(price) || price <= 0) {
+      document.getElementById('rikazMinesResult').textContent = "يرجى إدخال قيم صحيحة.";
+      return;
+    }
+
+    const goldThreshold = price * 85; // نصاب الذهب (85 جرام)
+    if (amount >= goldThreshold) {
+      const zakatAmount = amount * 0.025; // 2.5% من المبلغ
+      document.getElementById('rikazMinesResult').textContent = `الزكاة الواجبة: ${zakatAmount.toFixed(2)} ريال.`;
+    } else {
+      document.getElementById('rikazMinesResult').textContent = "لم يصل المبلغ إلى نصاب الذهب.";
+    }
+  }
+
+
+
+
+</script>
+
+</body>
+</html>
