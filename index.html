@@ -298,7 +298,7 @@
       <button class="support-btn"> للاقتراحات والشكاوى </button>
     </a>
   </div>
-      <button class="share-btn" onclick="toggleShareOptions()">مشاركة</button>
+       <button class="share-btn" onclick="toggleShareOptions()">مشاركة</button>
 
     <div class="share-options" id="shareOptions">
         <button class="whatsapp" onclick="shareWhatsApp()">واتساب</button>
@@ -307,7 +307,6 @@
         <button class="facebook" onclick="shareFacebook()">فيسبوك</button>
         <button class="messenger" onclick="shareMessenger()">ماسنجر</button>
         <button class="instagram" onclick="shareInstagram()">إنستجرام</button>
-        <button class="email" onclick="shareEmail()">بريد إلكتروني</button>
         <button class="copy" onclick="copyToClipboard()">نسخ الرسالة</button>
     </div>
   <br>
@@ -1105,13 +1104,6 @@
                 alert("تم نسخ الرسالة! يمكنك لصقها داخل إنستجرام.");
                 window.open("https://www.instagram.com/", "_blank");
             });
-        }
-
-        function shareEmail() {
-            let subject = "🌟 موقع الزكاة - شارك الأجر والثواب! 🌟";
-            let body = encodeURIComponent(message);
-            let mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${body}`;
-            window.location.href = mailtoLink;
         }
 
         function copyToClipboard() {
