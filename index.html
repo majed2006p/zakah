@@ -216,6 +216,68 @@
     }
 
   </style>
+
+  <style>
+       .share-btn {
+            background: linear-gradient(45deg, #00c3ff, #0044ff);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            font-size: 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s ease-in-out;
+            box-shadow: 0 0 10px #0044ff;
+        }
+
+        .share-btn:hover {
+            background: linear-gradient(45deg, #0044ff, #00c3ff);
+            box-shadow: 0 0 20px #00c3ff;
+        }
+
+        .share-options {
+            display: none;
+            margin-top: 20px;
+            width: 260px;
+            margin: 20px auto;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .share-options button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease-in-out;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: white;
+        }
+
+        .share-options button:not(:last-child) {
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .share-options button:hover {
+            filter: brightness(1.2);
+        }
+
+        .whatsapp { background: linear-gradient(45deg, #25D366, #128C7E); }
+        .telegram { background: linear-gradient(45deg, #0088cc, #005a8d); }
+        .twitter { background: linear-gradient(45deg, #1DA1F2, #0044aa); }
+        .facebook { background: linear-gradient(45deg, #1877F2, #0e5db9); }
+        .messenger { background: linear-gradient(45deg, #006AFF, #0044AA); }
+        .instagram { background: linear-gradient(45deg, #fd5949, #d6249f); }
+        .email { background: linear-gradient(45deg, #4169E1, #1E3A8A); }
+        .copy { background: linear-gradient(45deg, #6c757d, #343a40); }
+
+    </style>
+  
 </head>
 <body>
 
@@ -235,6 +297,18 @@
       <button class="support-btn"> للاقتراحات والشكاوى </button>
     </a>
   </div>
+      <button class="share-btn" onclick="toggleShareOptions()">مشاركة</button>
+
+    <div class="share-options" id="shareOptions">
+        <button class="whatsapp" onclick="shareWhatsApp()">واتساب</button>
+        <button class="telegram" onclick="shareTelegram()">تيليجرام</button>
+        <button class="twitter" onclick="shareTwitter()">تويتر</button>
+        <button class="facebook" onclick="shareFacebook()">فيسبوك</button>
+        <button class="messenger" onclick="shareMessenger()">ماسنجر</button>
+        <button class="instagram" onclick="shareInstagram()">إنستجرام</button>
+        <button class="email" onclick="shareEmail()">📧 البريد الإلكتروني</button>
+        <button class="copy" onclick="copyToClipboard()">نسخ الرسالة</button>
+    </div>
   <br>
   <br>
 
@@ -982,6 +1056,68 @@
 
 
 </script>
+  <script>
+        function toggleShareOptions() {
+            var options = document.getElementById("shareOptions");
+            options.style.display = (options.style.display === "block") ? "none" : "block";
+        }
 
+        let message = `🌟 موقع الزكاة 🌟
+
+أحبتي في الله، تم تصميم هذا الموقع بحمد الله كمجهود شخصي، وهو عبارة عن برنامج لحساب الزكاة تم تطويره بمراجعة مشايخ لضمان توافقه مع أحكام الشريعة الإسلامية.
+
+🎯 نرجو منكم مشاركة البرنامج، ونحتسب لكم الأجر عند الله كما مثل من صمم وشارك البرنامج.
+لوجه الله تعالى، نبتغي به الأجر والثواب من الله عز وجل.
+
+💚 ساهموا في نشر الموقع:
+🔗 https://app-zakah.github.io/zakah/
+
+جزاكم الله خيراً، وبارك في جهودكم! 🌹`;
+
+        function shareWhatsApp() {
+            let encodedMessage = encodeURIComponent(message);
+            window.open("https://wa.me/?text=" + encodedMessage, "_blank");
+        }
+
+        function shareTelegram() {
+            let encodedMessage = encodeURIComponent(message);
+            window.open("https://t.me/share/url?url=" + encodedMessage, "_blank");
+        }
+
+        function shareTwitter() {
+            let encodedMessage = encodeURIComponent(message);
+            window.open("https://twitter.com/intent/tweet?text=" + encodedMessage, "_blank");
+        }
+
+        function shareFacebook() {
+            let encodedMessage = encodeURIComponent(message);
+            window.open("https://www.facebook.com/sharer/sharer.php?u=" + encodedMessage, "_blank");
+        }
+
+        function shareMessenger() {
+            let encodedMessage = encodeURIComponent(message);
+            window.open("https://www.messenger.com/t/?text=" + encodedMessage, "_blank");
+        }
+
+        function shareInstagram() {
+            navigator.clipboard.writeText(message).then(() => {
+                alert("تم نسخ الرسالة! يمكنك لصقها داخل إنستجرام.");
+                window.open("https://www.instagram.com/", "_blank");
+            });
+        }
+
+        function shareEmail() {
+            let subject = "🌟 موقع الزكاة - شارك الأجر والثواب! 🌟";
+            let body = encodeURIComponent(message);
+            let mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${body}`;
+            window.location.href = mailtoLink;
+        }
+
+        function copyToClipboard() {
+            navigator.clipboard.writeText(message).then(() => {
+                alert("تم نسخ الرسالة إلى الحافظة!");
+            });
+        }
+    </script>
 </body>
 </html>
